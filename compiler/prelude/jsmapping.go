@@ -114,6 +114,9 @@ var $externalize = function(v, t) {
         return searchJsObject(v.$get(), t.elem);
       case $kindStruct:
         var f = t.fields[0];
+        if (f === undefined) {
+          return noJsObject;
+        }
         return searchJsObject(v[f.prop], f.typ);
       case $kindInterface:
         return searchJsObject(v.$val, v.constructor);
@@ -132,7 +135,11 @@ var $externalize = function(v, t) {
       if (!f.exported) {
         continue;
       }
-      o[f.name] = $externalize(v[f.prop], f.typ);
+      var name = f.name;
+      if (name === "") {
+        name = f.prop;
+      }
+      o[name] = $externalize(v[f.prop], f.typ);
     }
     return o;
   }
